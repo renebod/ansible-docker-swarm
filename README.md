@@ -1,2 +1,2 @@
-# rancher
-Rancher scripts for easy setup
+# ubuntu-ansible
+Ansible playbook with examples for Ubuntu base configuration
