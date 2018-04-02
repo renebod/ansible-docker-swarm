@@ -1,6 +1,6 @@
-[RESERVOIR]
-MRBLUE        ansible_ssh_host=192.168.178.200
-MRPINK        ansible_ssh_host=192.168.178.201
+[SWARM]
+MRPINK        ansible_ssh_host=192.168.178.200
+MRBLUE        ansible_ssh_host=192.168.178.201
 MRORANGE      ansible_ssh_host=192.168.178.202
 MRWHITE       ansible_ssh_host=192.168.178.203
 
