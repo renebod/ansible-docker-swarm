@@ -1,0 +1,93 @@
+---
+- hosts: SWARM
+
+  tasks:
+
+  - name: SET SSH AUTHORIZED PUBLIC KEY
+    authorized_key:
+      user: {{ ansible_user_id }}
+      state: present
+      key: "{{ item }}"
+    with_file:
+      - ~/.ssh/id_rsa.pub
+
+
+#  - name: NO SLEEPING ON THE JOB
+#    shell: gsettings set org.gnome.desktop.session idle-delay 0
+
+
+  - name: ENSURE HOSTNAME SET
+    become: true
+    hostname:
+      name: "{{ inventory_hostname }}"
+
+
+  - name: DISABLE BLUETOOTH
+    become: true
+    service:
+      name: bluetooth
+      enabled: no
+      state: stopped
+
+
+  - name: IMPORT KEY FROM URL
+    become: true
+    apt_key:
+      state: present
+      url: '{{ item }}'
+    with_items:
+      - https://download.docker.com/linux/ubuntu/gpg
+      - https://packagecloud.io/AtomEditor/atom/gpgkey
+
+
+  - name: ADD REPOSITORY TO APT
+    become: true
+    apt_repository:
+      repo: '{{ item.repo }}'
+      filename: '{{ item.name }}'
+      state: present
+    with_items:
+      - { name: 'docker', repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu artful stable' }
+      - { name: 'atom', repo: 'deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main' }
+
+
+  - name: UPGRADING USING APT
+    apt:
+      upgrade: full
+      update_cache: yes
+#      cache_valid_time: 86400 #One day
+      autoclean: true
+      autoremove: true
+    vars:
+      ansible_become: yes
+
+
+  - name: INSTALL PACKAGES
+    become: true
+    apt: name={{ item }} state=installed
+    with_items:
+      - screenfetch
+      - mc
+      - screen
+      - elinks
+      - gnome-tweak-tool
+      - netatalk
+      - avahi-daemon
+      - libpam-fprintd
+      - fprint-demo
+      - docker-ce
+      - atom
+
+
+  - name: ADD USER {{ ansible_user_id }} TO GROUP DOCKER
+    become: true
+    user: name={{ ansible_user_id }} groups=docker append=yes
+
+
+  - name: ENSURE SCREENFETCH IN .BASHRC
+    lineinfile:
+      path: ~/.bashrc
+      line: "{{ item }}"
+    with_items:
+        - "alias ll='ls -larth'"
+        - "screenfetch"
