@@ -1,0 +1,100 @@
+---
+- hosts: RESERVOIR
+
+  tasks:
+
+  - name: SET SSH AUTHORIZED PUBLIC KEY
+    authorized_key:
+      user: my_user
+      state: present
+      key: "{{ item }}"
+    with_file:
+      - ~/.ssh/id_rsa.pub
+
+#  - name: NO SLEEPING ON THE JOB
+#    shell: gsettings set org.gnome.desktop.session idle-delay 0
+
+
+  - name: DISABLE BLUETOOTH
+    become: true
+    service:
+      name: bluetooth
+      enabled: no
+      state: stopped
+
+
+  - name: UPGRADING USING APT
+    apt:
+      upgrade: full #Can be: yes or dist too
+      update_cache: yes
+      cache_valid_time: 86400 #One day
+      autoclean: true
+      autoremove: true
+    vars:
+      ansible_become: yes
+
+
+  - name: IMPORT KEY FROM URL
+    become: true
+    apt_key:
+      state: present
+      url: https://packagecloud.io/AtomEditor/atom/gpgkey
+
+
+  - name: ENSURE ATOM IN SOURCES
+    become: true
+    file:
+      path: /etc/apt/sources.list.d/atom.list
+
+
+  - name: ENSURE ATOM IN SOURCES
+    become: true
+    lineinfile:
+      path: /etc/apt/sources.list.d/atom.list
+      line: deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main
+
+
+  - name: INSTALL PACKAGES
+    become: true
+    apt: name={{ item }} state=installed
+    with_items:
+      - screenfetch
+      - mc
+      - screen
+      - elinks
+      - gnome-tweak-tool
+      - netatalk
+      - avahi-daemon
+      - libpam-fprintd
+      - fprint-demo
+      - atom
+
+
+  - name: ENSURE SCREENFETCH IN .BASHRC
+    lineinfile:
+      path: ~/.bashrc
+      line: "{{ item }}"
+    with_items:
+        - "alias ll=ls -larth"
+        - "screenfetch"
+
+#  - name: Set some kernel parameters
+#    lineinfile:
+#      dest: /etc/sysctl.conf
+#      regexp: "{{ item.regexp }}"
+#      line: "{{ item.line }}"
+#    with_items:
+#      - { regexp: '^kernel.shmall', line: 'kernel.shmall = 2097152' }
+#      - { regexp: '^kernel.shmmax', line: 'kernel.shmmax = 134217728' }
+#      - { regexp: '^fs.file-max', line: 'fs.file-max = 65536' }
+
+
+
+
+#  - name: ENSURE HOSTNAME SET
+#    hostname:
+#      name: {{ inventory_hostname }}
+
+#  - name: upgrade software on {{inventory_hostname}}
+#  - name: current host is {{ ansible_hostname }}
+#  - name: current host is {{ hostname }}
