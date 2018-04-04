@@ -1,19 +1,8 @@
-[ALL_HOSTS]
-ubuntu_[1:4]
-
 [DOCKER]
-MRPINK          ansible_ssh_host=ubuntu_1
-MRBLUE          ansible_ssh_host=ubuntu_2
-MRORANGE        ansible_ssh_host=ubuntu_3
-MRWHITE         ansible_ssh_host=ubuntu_4
-
-
-[SWARM_MANAGER_FIRST]
-MRPINK          ansible_ssh_host=ubuntu_1
+ubuntu_[1:4]
 
 
 [DOCKER:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_ssh_user='root'
 ansible_ssh_pass='secret123'
-#ansible_sudo_pass='secret123'

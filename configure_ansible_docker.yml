@@ -3,18 +3,12 @@
 
   tasks:
 
-#  - name: ENSURE HOSTNAME SET
-#    hostname:
-#      name: "{{ inventory_hostname }}"
-
-
   - name: IMPORT KEY FROM URL
     apt_key:
       state: present
       url: '{{ item }}'
     with_items:
       - https://download.docker.com/linux/ubuntu/gpg
-#      - https://packagecloud.io/AtomEditor/atom/gpgkey
 
 
   - name: ADD REPOSITORY TO APT
@@ -23,32 +17,18 @@
       state: present
     with_items:
       - deb [arch=amd64] https://download.docker.com/linux/ubuntu artful stable
-#      - deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main
 
 
-  - name: UPGRADING USING APT
-    apt:
-      update_cache: yes
+#  - name: UPDATE USING APT
+#    apt: update_cache=yes
 
 
   - name: INSTALL PACKAGES
     become: true
     apt: name={{ item }} state=installed
     with_items:
-      - screenfetch
       - docker-ce
-#      - atom
 
 
-  - name: ADD USER {{ ansible_user_id }} TO GROUP DOCKER
-    become: true
-    user: name={{ ansible_user_id }} groups=docker append=yes
-
-
-  # - name: ENSURE SCREENFETCH IN .BASHRC
-  #   lineinfile:
-  #     path: ~/.bashrc
-  #     line: "{{ item }}"
-  #   with_items:
-  #       - "alias ll='ls -larth'"
-  #       - "screenfetch"
+  - name: ENSURE DOCKER STARTED
+    service: name=docker state=started

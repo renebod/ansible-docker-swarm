@@ -1,0 +1,47 @@
+---
+- hosts: DOCKER[0]
+
+  tasks:
+
+    - name: DETERMINE SWARM STATUS
+      shell: >
+        docker info | egrep '^Swarm: ' | cut -d ' ' -f2
+      register: swarm_status
+      changed_when: false
+
+
+    - name: INITIALIZE SWARM CLUSTER
+      shell: >
+        docker swarm init --advertise-addr=eth0:2377
+      when: "'inactive' in swarm_status.stdout_lines"
+
+
+    - name: RETRIEVE SWARM WORKER TOKEN
+      shell: >
+        docker swarm join-token -q worker
+      register: swarm_worker_token
+      changed_when: false
+
+
+    - debug: var={{ swarm_worker_token.stdout }}
+    - set_fact: token="{{ swarm_worker_token.stdout }}" cacheable=true
+
+
+- hosts: DOCKER[1:4]
+
+  tasks:
+
+    - set_fact: token="{{ hostvars['ubuntu_1']['token'] }}" cacheable=true
+
+
+    - name: DETERMINE SWARM STATUS
+      shell: >
+        docker info | egrep '^Swarm: ' | cut -d ' ' -f2
+      register: swarm_status
+      changed_when: false
+
+
+    - name: ADD NODE TO SWARM
+      shell: >
+        docker swarm join --advertise-addr=eth0:2377 --token={{ token }} ubuntu_1:2377
+      when: "'inactive' in swarm_status.stdout_lines"

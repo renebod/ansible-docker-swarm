@@ -2,7 +2,9 @@
 
 NODES=5
 
-if [ -z "$1" ]; then
+case "$1" in
+'init')
+echo "Intialize Docker Ubuntu"
   docker build -t demo_ubuntu .
   IMG='demo_ubuntu'
 
@@ -20,11 +22,39 @@ if [ -z "$1" ]; then
         --hostname $NAME.example.com \
         --name $NAME \
         --volume $PWD:/ansible \
+        --privileged \
         --network=mgmt-network \
         --restart always \
         $IMG
   done
-fi
+;;
+'config')
+echo "Config Management"
+  docker exec -it ubuntu_manager ansible-playbook -i ansible/hosts \
+      ansible/configure_ansible_docker.yml -f $NODES
+;;
+'swarm')
+echo "Starting Swarm"
+  docker exec -it ubuntu_manager ansible-playbook -i ansible/hosts \
+      ansible/swarm.yml
+  docker exec -it ubuntu_1 docker node ls
+;;
+'portainer')
+CMD="docker service create \
+  --name portainer \
+  --publish 9000:9000 \
+  --privileged \
+  --constraint 'node.role == manager' \
+  --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
+  portainer/portainer \
+  -H unix:///var/run/docker.sock"
 
-docker exec -it ubuntu_manager ansible-playbook -i ansible/hosts \
-    ansible/configure_ansible_docker.yml -f $NODES
+CMD2=docker run -d -p 9000:9000 portainer/portainer -H tcp://localhost:2375
+
+docker exec -it ubuntu_1 $CMD
+#open -a /Applications/Firefox.app -g http://news.google.com
+;;
+*)
+echo "Please add command: $0 [init|config|swarm]"
+;;
+esac
