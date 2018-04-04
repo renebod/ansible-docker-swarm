@@ -1,9 +1,19 @@
-[RESERVOIR]
-MRPINK        ansible_ssh_host=192.168.178.200
-MRBLUE        ansible_ssh_host=192.168.178.201
-MRORANGE      ansible_ssh_host=192.168.178.202
-MRWHITE       ansible_ssh_host=192.168.178.203
+[ALL_HOSTS]
+ubuntu_[1:4]
 
-#[RESERVOIR:vars]
-#ntp_server=nl.pool.ntp.org
-#proxy=proxy.example.com
+[DOCKER]
+MRPINK          ansible_ssh_host=ubuntu_1
+MRBLUE          ansible_ssh_host=ubuntu_2
+MRORANGE        ansible_ssh_host=ubuntu_3
+MRWHITE         ansible_ssh_host=ubuntu_4
+
+
+[SWARM_MANAGER_FIRST]
+MRPINK          ansible_ssh_host=ubuntu_1
+
+
+[DOCKER:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_user='root'
+ansible_ssh_pass='secret123'
+#ansible_sudo_pass='secret123'
