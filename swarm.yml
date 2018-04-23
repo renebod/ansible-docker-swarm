@@ -27,7 +27,7 @@
     - set_fact: token="{{ swarm_worker_token.stdout }}" cacheable=true
 
 
-- hosts: DOCKER[1:4]
+- hosts: DOCKER[1:3]
 
   tasks:
 
