@@ -5,8 +5,8 @@ NODES=5
 case "$1" in
 'init')
 echo "Intialize Docker Ubuntu"
-  docker build -t demo_ubuntu .
   IMG='demo_ubuntu'
+  docker build -t $IMG .
 
   for i in $(eval echo "{1..$NODES}")
   do
