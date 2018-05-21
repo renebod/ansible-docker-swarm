@@ -25,7 +25,7 @@ echo "Intialize Docker Ubuntu"
         --name $NAME \
         --volume $PWD:/ansible \
         --privileged \
-        --network=mgmt-network \
+        --network=$NETWORK \
         --restart always \
         $IMG
   done
