@@ -21,7 +21,7 @@
 
 
   - name: ADD REPOSITORY TO APT
-     provider: "{{ provider }}"
+    provider: "{{ provider }}"
     apt_repository:
       repo: '{{ item }}'
       state: present
