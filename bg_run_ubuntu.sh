@@ -7,6 +7,8 @@ case "$1" in
 echo "Intialize Docker Ubuntu"
   IMG='demo_ubuntu'
   docker build -t $IMG .
+  NETWORK='mgmt-network'
+  docker network inspect $NETWORK || docker network create $NETWORK
 
   for i in $(eval echo "{1..$NODES}")
   do
