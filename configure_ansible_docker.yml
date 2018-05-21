@@ -3,16 +3,8 @@
 
   tasks:
 
-  - name: DEFINE PROVIDER
-    set_fact:
-      provider:
-        host: "{{ inventory_hostname }}"
-        username: "{{ username }}"
-        password: "{{ password }}"
-
 
   - name: IMPORT KEY FROM URL
-    provider: "{{ provider }}"
     apt_key:
       state: present
       url: '{{ item }}'
@@ -21,7 +13,6 @@
 
 
   - name: ADD REPOSITORY TO APT
-    provider: "{{ provider }}"
     apt_repository:
       repo: '{{ item }}'
       state: present
@@ -34,7 +25,6 @@
 
 
   - name: INSTALL PACKAGES
-    provider: "{{ provider }}"
     become: true
     apt: name={{ item }} state=installed
     with_items:
@@ -42,5 +32,4 @@
 
 
   - name: ENSURE DOCKER STARTED
-    provider: "{{ provider }}"
     service: name=docker state=started
