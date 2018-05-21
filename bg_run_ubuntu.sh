@@ -17,7 +17,7 @@ echo "Intialize Docker Ubuntu"
     else
       NAME="ubuntu_$i"
     fi
-    echo "Starting Container $NAME, SSH on $PORT"
+    echo "Starting Container $NAME, based on $IMG"
     docker rm -f $NAME
 
     docker run --detach \
