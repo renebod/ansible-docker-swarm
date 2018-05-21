@@ -3,7 +3,6 @@
 
   tasks:
 
-
   - name: IMPORT KEY FROM URL
     apt_key:
       state: present
