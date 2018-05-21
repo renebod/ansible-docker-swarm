@@ -12,8 +12,8 @@
 
 
   - name: IMPORT KEY FROM URL
+    provider: "{{ provider }}"
     apt_key:
-      provider: "{{ provider }}"
       state: present
       url: '{{ item }}'
     with_items:
