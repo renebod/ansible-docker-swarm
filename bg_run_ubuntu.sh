@@ -33,7 +33,7 @@ echo "Intialize Docker Ubuntu"
 'config')
 echo "Config Management"
   docker exec -it ubuntu_manager ansible-playbook -i ansible/hosts \
-      ansible/configure_ansible_docker.yml -f $NODES
+      ansible/configure_ansible_docker.yml -f $NODES -vvv
 ;;
 'swarm')
 echo "Starting Swarm"
