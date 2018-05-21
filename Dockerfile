@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:bionic
 MAINTAINER René Bod "https://github.com/renebod"
 
 RUN apt-get update
