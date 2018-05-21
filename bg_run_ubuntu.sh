@@ -23,6 +23,7 @@ echo "Intialize Docker Ubuntu"
     docker run --detach \
         --hostname $NAME.example.com \
         --name $NAME \
+        --publish 808$i:8080 \
         --volume $PWD:/ansible \
         --privileged \
         --network=$NETWORK \
@@ -38,23 +39,19 @@ echo "Config Management"
 'swarm')
 echo "Starting Swarm"
   docker exec -it ubuntu_manager ansible-playbook -i ansible/hosts \
-      ansible/swarm.yml
+      ansible/swarm.yml $2
   docker exec -it ubuntu_1 docker node ls
 ;;
 'portainer')
-CMD="docker service create \
-  --name portainer \
-  --publish 9000:9000 \
-  --privileged \
-  --constraint 'node.role == manager' \
-  --mount type=bind,src=//var/run/docker.sock,dst=/var/run/docker.sock \
-  portainer/portainer \
-  -H unix:///var/run/docker.sock"
-
-CMD2=docker run -d -p 9000:9000 portainer/portainer -H tcp://localhost:2375
-
-docker exec -it ubuntu_1 $CMD
-#open -a /Applications/Firefox.app -g http://news.google.com
+echo "Deploying Portainer to Swarm"
+  docker exec -it ubuntu_1 docker service create --name portainer portainer/portainer
+;;
+'nginx')
+echo "Deploying NGINX to Swarm"
+  docker exec -it ubuntu_1 docker service create --replicas 4 -p 8080:8080 --name web nginx
+;;
+'firefox')
+  docker run -e DISPLAY -v $HOME/.Xauthority:/home/developer/.Xauthority --net=host $IMG /bin/bash
 ;;
 *)
 echo "Please add command: $0 [init|config|swarm]"
